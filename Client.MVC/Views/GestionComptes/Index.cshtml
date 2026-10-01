@@ -1,0 +1,50 @@
+﻿@model IEnumerable<Client.MVC.Models.NumeroDossier>
+
+@{
+    ViewData["Title"] = "Liste des numéros de compte";
+}
+
+<h1>Liste des numéros de compte</h1>
+
+<p>
+    <a asp-action="DemanderNumero">Demander un numéro</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.NumeroCompte)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdDemandeur)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Statut)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DateCreation)
+            </th>
+           
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+           
+            <td>
+                @Html.DisplayFor(modelItem => item.NumeroCompte)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdDemandeur)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Statut)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateCreation)
+            </td>
+            
+        </tr>
+}
+    </tbody>
+</table>
