@@ -1,5 +1,6 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text.Json.Serialization;
+using GenNumeros.ApplicationCore.DTOs;
 using GenNumeros.ApplicationCore.Interfaces;
 using GenNumeros.ApplicationCore.Services;
 using GenNumeros.Infrastructure.Data;
@@ -31,9 +32,9 @@ namespace GenNumeros.API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "API de generation des numeros de compte",
+                    Title = "API de génération des numéros de compte",
                     Version = "v1",
-                    Description = "Generation et reservation des numeros de compte bancaire.",
+                    Description = "Génération et réservation des numéros de compte bancaire.",
                     License = new OpenApiLicense
                     {
                         Name = builder.Configuration["Documentation:Licence"],
@@ -47,9 +48,19 @@ namespace GenNumeros.API
                 });
 
                 // Les commentaires du code deviennent la documentation de
-                // chaque methode exposee.
-                string documentation = Assembly.GetExecutingAssembly().GetName().Name + ".xml";
-                c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, documentation));
+                // chaque methode exposee, et ceux du coeur celle des schemas
+                // qu'elle echange.
+                Assembly[] assemblages = { typeof(Program).Assembly, typeof(DemandeDeNumeroDto).Assembly };
+
+                foreach (Assembly assemblage in assemblages)
+                {
+                    string documentation = Path.Combine(AppContext.BaseDirectory, assemblage.GetName().Name + ".xml");
+
+                    if (File.Exists(documentation))
+                    {
+                        c.IncludeXmlComments(documentation);
+                    }
+                }
             });
 
             builder.Services.AddDbContext<GenNumeroContext>(options =>
