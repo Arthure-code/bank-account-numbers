@@ -17,11 +17,11 @@ ASP.NET Core 8, Entity Framework Core 8, SQLite, Swagger.
 
 **The numbers given out**
 
-![The list of account numbers: one row per file with the sixteen-digit number in its four slices, the employee who asked for it, the status, and the moment it was attributed, the most recent first](docs/numeros.png)
+![The list of account numbers: one row per file with the sixteen-digit number in its four slices, the employee who asked for it, the status, and the moment it was attributed, the most recent first](docs/account-numbers.png)
 
 **Asking for a number**
 
-![The request form: a branch picked from a list and the employee's identifier, nothing else. The number itself is never typed](docs/demande.png)
+![The request form: a branch picked from a list and the employee's identifier, nothing else. The number itself is never typed](docs/ask-for-a-number.png)
 
 **The API**
 
@@ -48,26 +48,26 @@ ASP.NET Core 8, Entity Framework Core 8, SQLite, Swagger.
 The API creates the SQLite file and migrates it on its first run, so start it first.
 
 ```bash
-cd src/GenNumeros.API
+cd src/AccountNumbers.API
 dotnet run
 ```
 
 Then, in a second terminal, the web application:
 
 ```bash
-cd src/Client.MVC
+cd src/AccountNumbers.Web
 dotnet run
 ```
 
-The API listens on `http://localhost:5180`, which is the address the web application reads from its configuration, and its Swagger page is at `/swagger`. The screens are at `http://localhost:5190/GestionComptes`. Delete `GenNumero.db` to start over.
+The API listens on `http://localhost:5180`, which is the address the web application reads from its configuration, and its Swagger page is at `/swagger`. The screens are at `http://localhost:5190/AccountNumbers`. Delete `AccountNumbers.db` to start over.
 
 ```bash
-dotnet test GenNumeros.sln
+dotnet test AccountNumbers.sln
 ```
 
 ## Résumé
 
-Générateur de numéros de compte bancaire en ASP.NET Core 8, en deux applications. Une API en trois couches tire les numéros et les conserve, une application MVC porte les écrans des succursales et ne fabrique jamais un numéro elle-même : elle le demande à l'API. Un numéro fait seize chiffres en quatre tranches, banque, système appelant, succursale et compte, et ses deux derniers chiffres forment toujours un nombre pair. L'employé ne saisit que la succursale et son identifiant ; le numéro de la banque vient de la configuration de l'API, celui du système appelant de la configuration de l'application. Le même numéro n'est jamais attribué deux fois : le service tire contre ceux qui sont déjà pris, recommence au plus cinquante fois, et un index unique en base refuse le doublon sans compter sur le service. Une demande hors format est refusée avant d'atteindre le service, et seuls les numéros encore neufs paraissent à l'écran, du plus récent au plus ancien. Cinquante et un tests couvrent les quatre niveaux, contrôleurs moqués, service et dépôt sur une vraie base SQLite, API entière de bout en bout, et application web entière avec l'API moquée.
+Générateur de numéros de compte bancaire en ASP.NET Core 8, en deux applications. Une API en trois couches tire les numéros et les conserve, une application MVC porte les écrans des branches et ne fabrique jamais un numéro elle-même : elle le request à l'API. Un numéro fait seize chiffres en quatre slices, bank, système appelant, branch et compte, et ses deux derniers chiffres forment toujours un nombre pair. L'employé ne saisit que la branch et son identifier ; le numéro de la bank vient de la configuration de l'API, celui du système appelant de la configuration de l'application. Le même numéro n'est jamais attribué deux fois : le service tire contre ceux qui sont déjà taken, recommence au plus cinquante fois, et un index unique en base refuse le doublon sans compter sur le service. Une request hors format est refusée avant d'atteindre le service, et seuls les numéros encore neufs paraissent à l'écran, du plus récent au plus previous. Cinquante et un tests couvrent les quatre niveaux, contrôleurs moqués, service et dépôt sur une vraie base SQLite, API entière de bout en bout, et application web entière avec l'API moquée.
 
 ## Licence
 

@@ -1,0 +1,33 @@
+﻿@model IEnumerable<AccountNumbers.Web.Models.AccountNumber>
+
+@{
+    ViewData["Title"] = "Account numbers";
+}
+
+<h1>Account numbers</h1>
+
+<p>
+    <a asp-action="Ask">Ask for a number</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Number)</th>
+            <th>@Html.DisplayNameFor(model => model.RequestedBy)</th>
+            <th>@Html.DisplayNameFor(model => model.Status)</th>
+            <th>@Html.DisplayNameFor(model => model.AttributedOn)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Number)</td>
+                <td>@Html.DisplayFor(modelItem => item.RequestedBy)</td>
+                <td>@Html.DisplayFor(modelItem => item.Status)</td>
+                <td>@Html.DisplayFor(modelItem => item.AttributedOn)</td>
+            </tr>
+        }
+    </tbody>
+</table>

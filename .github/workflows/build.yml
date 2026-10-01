@@ -53,6 +53,6 @@ jobs:
           # La solution porte les quatre projets d'application et les cinq
           # projets de test : elle couvre tout le depot.
           ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"Arthure-code_bank-account-numbers" /o:"arthuredevsecops" /d:sonar.token="$env:SONAR_TOKEN" /d:sonar.cs.cobertura.reportsPaths="**/coverage.cobertura.xml" /d:sonar.cpd.exclusions="**/Migrations/**"
-          dotnet build GenNumeros.sln
-          dotnet test GenNumeros.sln --no-build --collect:"XPlat Code Coverage"
+          dotnet build AccountNumbers.sln
+          dotnet test AccountNumbers.sln --no-build --collect:"XPlat Code Coverage"
           ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="$env:SONAR_TOKEN"
