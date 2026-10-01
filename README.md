@@ -25,7 +25,7 @@ ASP.NET Core 8, Entity Framework Core 8, SQLite, Swagger. The site is in French.
 
 **The API**
 
-![The Swagger page of the numbers API: one operation to list the numbers, one to ask for a new one, each with its French summary, and the two schemas the API exchanges](docs/api-swagger.png)
+![The Swagger page of the numbers API: one operation to list the numbers, one to ask for a new one, each with its French summary, and the three schemas the API exchanges](docs/api-swagger.png)
 
 ## How it works
 
