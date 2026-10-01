@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 string adresseDeLApi = builder.Configuration.GetValue<string>("urlAPI")
-    ?? throw new InvalidOperationException("L'adresse de l'API est absente de la configuration.");
+    ?? throw new InvalidOperationException("The API address is missing from the configuration.");
 
 builder.Services.AddHttpClient<INumerosProxy, NumerosProxy>(client =>
     client.BaseAddress = new Uri(adresseDeLApi));

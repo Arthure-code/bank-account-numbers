@@ -2,7 +2,7 @@
 
 namespace Client.MVC.Interfaces
 {
-    // Ce que l'application demande a l'API, et rien de plus.
+    // What the application asks the API for, and nothing more.
     public interface INumerosProxy
     {
         Task<List<NumeroDossier>> ObtenirTousLesNumeros();

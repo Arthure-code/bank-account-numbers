@@ -11,8 +11,8 @@ namespace GenNumeros.API
 {
     public class Program
     {
-        // La classe ne sert qu'a porter le point d'entree, mais les tests
-        // fonctionnels la designent : elle ne peut pas etre statique.
+        // The class only carries the entry point, but the functional
+        // tests name it, so it cannot be static.
         protected Program()
         {
         }
@@ -32,9 +32,9 @@ namespace GenNumeros.API
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "API de génération des numéros de compte",
+                    Title = "Account number generation API",
                     Version = "v1",
-                    Description = "Génération et réservation des numéros de compte bancaire.",
+                    Description = "Generation and reservation of bank account numbers.",
                     License = new OpenApiLicense
                     {
                         Name = builder.Configuration["Documentation:Licence"],
@@ -47,9 +47,9 @@ namespace GenNumeros.API
                     }
                 });
 
-                // Les commentaires du code deviennent la documentation de
-                // chaque methode exposee, et ceux du coeur celle des schemas
-                // qu'elle echange.
+                // The comments in the code become the documentation of
+                // every exposed method, and those of the core the
+                // documentation of the schemas it exchanges.
                 Assembly[] assemblages = { typeof(Program).Assembly, typeof(DemandeDeNumeroDto).Assembly };
 
                 foreach (Assembly assemblage in assemblages)
@@ -77,8 +77,8 @@ namespace GenNumeros.API
                 app.UseSwaggerUI();
             }
 
-            // L'API porte le schema : elle joue ses migrations au demarrage,
-            // ce qu'EnsureCreated ne ferait pas.
+            // The API owns the schema: it runs its migrations on startup,
+            // which EnsureCreated would not do.
             using (IServiceScope portee = app.Services.CreateScope())
             {
                 var context = portee.ServiceProvider.GetRequiredService<GenNumeroContext>();
@@ -92,7 +92,7 @@ namespace GenNumeros.API
             await app.RunAsync();
         }
 
-        // Une adresse absente laisse simplement le lien vide dans la fiche.
+        // A missing address simply leaves the link empty on the page.
         private static Uri? Adresse(string? valeur)
         {
             return string.IsNullOrWhiteSpace(valeur) ? null : new Uri(valeur);

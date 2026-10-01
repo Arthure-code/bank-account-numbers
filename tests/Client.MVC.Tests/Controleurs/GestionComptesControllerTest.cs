@@ -10,8 +10,8 @@ namespace Client.MVC.Tests.Controleurs
 {
     public class GestionComptesControllerTest
     {
-        // La configuration reelle du cadriciel, remplie en memoire : ce n'est
-        // pas une dependance du projet, donc on ne la moque pas.
+        // The framework's own configuration, filled in memory: it is not
+        // a dependency of the project, so it is not mocked.
         private static IConfiguration Configuration(params (string Cle, string Valeur)[] valeurs)
         {
             return new ConfigurationBuilder()
@@ -34,7 +34,7 @@ namespace Client.MVC.Tests.Controleurs
             {
                 Id = identifiant,
                 NumeroCompte = numero,
-                IdDemandeur = "employe.limoilou",
+                IdDemandeur = "employee.limoilou",
                 Statut = statut,
                 DateCreation = creation
             };
@@ -42,19 +42,19 @@ namespace Client.MVC.Tests.Controleurs
         [Fact]
         public async Task Index_NeMontreQueLesNumerosNeufs()
         {
-            //Etant donne un numero neuf et un numero deja utilise
+            //Given one new number and one already in use
             var proxy = new Mock<INumerosProxy>();
             proxy.Setup(p => p.ObtenirTousLesNumeros()).ReturnsAsync(new List<NumeroDossier>
             {
-                UnNumero(1, "145-12-45400-123456", "Nouveau", new DateTime(2026, 1, 5)),
+                UnNumero(1, "145-12-45400-123456", "New", new DateTime(2026, 1, 5)),
                 UnNumero(2, "145-12-45401-654320", "Attribue", new DateTime(2026, 1, 6))
             });
             var controleur = new GestionComptesController(ConfigurationAvecSuccursales(), proxy.Object);
 
-            //Lorsque
+            //When
             ActionResult resultat = await controleur.Index();
 
-            //Alors
+            //Then
             var montres = Assert.IsAssignableFrom<IEnumerable<NumeroDossier>>(
                 Assert.IsType<ViewResult>(resultat).Model);
             Assert.Equal("145-12-45400-123456", Assert.Single(montres).NumeroCompte);
@@ -63,36 +63,36 @@ namespace Client.MVC.Tests.Controleurs
         [Fact]
         public async Task Index_MontreLePlusRecentEnPremier()
         {
-            //Etant donne trois numeros neufs attribues a trois moments
+            //Given three new numbers given out at three moments
             var proxy = new Mock<INumerosProxy>();
             proxy.Setup(p => p.ObtenirTousLesNumeros()).ReturnsAsync(new List<NumeroDossier>
             {
-                UnNumero(1, "premier", "Nouveau", new DateTime(2026, 1, 5)),
-                UnNumero(3, "dernier", "Nouveau", new DateTime(2026, 1, 7)),
-                UnNumero(2, "deuxieme", "Nouveau", new DateTime(2026, 1, 6))
+                UnNumero(1, "first", "New", new DateTime(2026, 1, 5)),
+                UnNumero(3, "last", "New", new DateTime(2026, 1, 7)),
+                UnNumero(2, "second", "New", new DateTime(2026, 1, 6))
             });
             var controleur = new GestionComptesController(ConfigurationAvecSuccursales(), proxy.Object);
 
-            //Lorsque
+            //When
             ActionResult resultat = await controleur.Index();
 
-            //Alors
+            //Then
             var montres = Assert.IsAssignableFrom<IEnumerable<NumeroDossier>>(
                 Assert.IsType<ViewResult>(resultat).Model).ToList();
-            Assert.Equal("dernier, deuxieme, premier", string.Join(", ", montres.Select(n => n.NumeroCompte)));
+            Assert.Equal("last, second, first", string.Join(", ", montres.Select(n => n.NumeroCompte)));
         }
 
         [Fact]
         public void DemanderNumero_ProposeLesSuccursalesDeLaConfiguration()
         {
-            //Etant donne deux succursales au fichier de configuration
+            //Given two branches in the configuration file
             var controleur = new GestionComptesController(ConfigurationAvecSuccursales(),
                 new Mock<INumerosProxy>().Object);
 
-            //Lorsque la page s'ouvre
+            //When the page opens
             ActionResult resultat = controleur.DemanderNumero();
 
-            //Alors la liste deroulante les porte, numero sur cinq chiffres
+            //Then the drop-down carries them, number on five digits
             Assert.IsType<ViewResult>(resultat);
             var succursales = Assert.IsType<List<SelectListItem>>(controleur.ViewBag.Succursales);
             Assert.Equal(2, succursales.Count);
@@ -103,15 +103,15 @@ namespace Client.MVC.Tests.Controleurs
         [Fact]
         public async Task DemanderNumero_NeDemandeRienQuandLeFormulaireEstInvalide()
         {
-            //Etant donne un identifiant manquant
+            //Given a missing identifier
             var proxy = new Mock<INumerosProxy>();
             var controleur = new GestionComptesController(ConfigurationAvecSuccursales(), proxy.Object);
             controleur.ModelState.AddModelError("IdDemandeur", "Votre identifiant est requis.");
 
-            //Lorsque
+            //When
             ActionResult resultat = await controleur.DemanderNumero(new DemandeDeNumero());
 
-            //Alors la page revient, avec ses succursales, et rien n'est demande
+            //Then the page comes back with its branches, and nothing is asked for
             Assert.IsType<ViewResult>(resultat);
             Assert.NotNull(controleur.ViewBag.Succursales);
             proxy.Verify(p => p.DemanderUnNumero(It.IsAny<DemandeDeNumero>()), Times.Never);
@@ -120,23 +120,23 @@ namespace Client.MVC.Tests.Controleurs
         [Fact]
         public async Task DemanderNumero_PoseLeNumeroDeSystemeAppelantDeLApplication()
         {
-            //Etant donne une demande ou le visiteur n'a rempli que sa
-            //succursale et son identifiant
+            //Given a request where the visitor filled in only their
+            //branch and their identifier
             var proxy = new Mock<INumerosProxy>();
             DemandeDeNumero? envoyee = null;
             proxy.Setup(p => p.DemanderUnNumero(It.IsAny<DemandeDeNumero>()))
                 .Callback<DemandeDeNumero>(d => envoyee = d)
-                .ReturnsAsync(UnNumero(1, "145-12-45400-123456", "Nouveau", DateTime.Now));
+                .ReturnsAsync(UnNumero(1, "145-12-45400-123456", "New", DateTime.Now));
             var controleur = new GestionComptesController(ConfigurationAvecSuccursales(), proxy.Object);
 
-            //Lorsque
+            //When
             ActionResult resultat = await controleur.DemanderNumero(new DemandeDeNumero
             {
                 Succursale = "45400",
                 IdDemandeur = "marie.tremblay"
             });
 
-            //Alors l'application ajoute son propre numero avant d'appeler
+            //Then the application adds its own number before calling
             Assert.Equal("12", envoyee?.SystemeAppelant);
             Assert.Equal("Index", Assert.IsType<RedirectToActionResult>(resultat).ActionName);
         }
@@ -144,56 +144,56 @@ namespace Client.MVC.Tests.Controleurs
         [Fact]
         public async Task DemanderNumero_LeNumeroDeSystemeAppelantSeLitDansLaConfiguration()
         {
-            //Etant donne une application enregistree sous un autre numero
+            //Given an application registered under another number
             var proxy = new Mock<INumerosProxy>();
             DemandeDeNumero? envoyee = null;
             proxy.Setup(p => p.DemanderUnNumero(It.IsAny<DemandeDeNumero>()))
                 .Callback<DemandeDeNumero>(d => envoyee = d)
-                .ReturnsAsync(UnNumero(1, "145-99-45400-123456", "Nouveau", DateTime.Now));
+                .ReturnsAsync(UnNumero(1, "145-99-45400-123456", "New", DateTime.Now));
             var controleur = new GestionComptesController(
                 Configuration(("SystemeAppelant", "99")), proxy.Object);
 
-            //Lorsque
+            //When
             await controleur.DemanderNumero(new DemandeDeNumero
             {
                 Succursale = "45400",
                 IdDemandeur = "marie.tremblay"
             });
 
-            //Alors c'est celui de la configuration qui part
+            //Then the one from the configuration is the one that goes
             Assert.Equal("99", envoyee?.SystemeAppelant);
         }
 
         [Fact]
         public async Task DemanderNumero_RevientSurLaPageQuandLApiNAttribueRien()
         {
-            //Etant donne une API qui ne rend aucun numero
+            //Given an API that answers no number
             var proxy = new Mock<INumerosProxy>();
             proxy.Setup(p => p.DemanderUnNumero(It.IsAny<DemandeDeNumero>()))
                 .ReturnsAsync((NumeroDossier?)null);
             var controleur = new GestionComptesController(ConfigurationAvecSuccursales(), proxy.Object);
 
-            //Lorsque
+            //When
             ActionResult resultat = await controleur.DemanderNumero(new DemandeDeNumero
             {
                 Succursale = "45400",
                 IdDemandeur = "marie.tremblay"
             });
 
-            //Alors le visiteur lit pourquoi, au lieu d'une page blanche
+            //Then the visitor reads why, instead of a blank page
             Assert.IsType<ViewResult>(resultat);
-            Assert.Contains("n'a pas pu attribuer", controleur.ModelState[string.Empty]!.Errors[0].ErrorMessage,
+            Assert.Contains("could not give out a number", controleur.ModelState[string.Empty]!.Errors[0].ErrorMessage,
                 StringComparison.Ordinal);
         }
 
         [Fact]
         public void DemanderNumero_SupporteUneConfigurationSansSuccursale()
         {
-            //Etant donne un fichier de configuration sans liste de succursales
+            //Given a configuration file with no list of branches
             var controleur = new GestionComptesController(Configuration(("SystemeAppelant", "12")),
                 new Mock<INumerosProxy>().Object);
 
-            //Alors la page s'ouvre quand meme, avec une liste vide
+            //Then the page still opens, with an empty list
             Assert.IsType<ViewResult>(controleur.DemanderNumero());
             Assert.Empty(Assert.IsType<List<SelectListItem>>(controleur.ViewBag.Succursales));
         }

@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using Client.MVC.Interfaces;
 using Client.MVC.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -8,11 +8,11 @@ namespace Client.MVC.Controllers
 {
     public class GestionComptesController : Controller
     {
-        // Les numeros qui n'ont pas encore servi.
-        private const string StatutNouveau = "Nouveau";
+        // The numbers nobody has put to use yet.
+        private const string StatutNouveau = "New";
 
-        // Le numero que la banque a donne a cette application. Il peut
-        // changer, donc il se lit dans la configuration.
+        // The number the bank gave this application. It can change, so it
+        // is read from the configuration.
         private const string SystemeAppelantParDefaut = "12";
 
         private readonly IConfiguration _config;
@@ -55,8 +55,8 @@ namespace Client.MVC.Controllers
                 return View(demande);
             }
 
-            // Le demandeur choisit sa succursale et s'identifie ; le numero
-            // du systeme appelant, lui, appartient a l'application.
+            // The employee chooses a branch and identifies themselves; the
+            // calling system number belongs to the application.
             demande.SystemeAppelant = _config["SystemeAppelant"] ?? SystemeAppelantParDefaut;
 
             NumeroDossier? attribue = await _numeros.DemanderUnNumero(demande);
@@ -64,7 +64,7 @@ namespace Client.MVC.Controllers
             if (attribue == null)
             {
                 ModelState.AddModelError(string.Empty,
-                    "L'API n'a pas pu attribuer de numero. Reessayez dans un moment.");
+                    "The API could not give out a number. Please try again in a moment.");
                 ViewBag.Succursales = ListeDesSuccursales();
                 return View(demande);
             }
@@ -83,7 +83,7 @@ namespace Client.MVC.Controllers
                 .ToList();
         }
 
-        // Obtient la liste des succursales depuis le fichier de configuration
+        // The branches come from the configuration file.
         private List<Succursale> ObtenirSuccursales()
         {
             return _config.GetSection("Succursales").Get<List<Succursale>>() ?? new List<Succursale>();

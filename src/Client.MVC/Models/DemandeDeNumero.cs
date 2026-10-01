@@ -2,21 +2,21 @@
 
 namespace Client.MVC.Models
 {
-    // Ce que l'employe remplit a l'ecran. Le numero du systeme appelant
-    // n'y figure pas : c'est l'application qui le connait.
+    // What the employee fills in on screen. The calling system number is
+    // not there: the application is the one that knows it.
     public class DemandeDeNumero
     {
-        [Required(ErrorMessage = "Choisissez une succursale.")]
-        [RegularExpression("^[0-9]{5}$", ErrorMessage = "Le numero de succursale compte cinq chiffres.")]
-        [Display(Name = "Succursale")]
+        [Required(ErrorMessage = "Please choose a branch.")]
+        [RegularExpression("^[0-9]{5}$", ErrorMessage = "A branch number is five digits long.")]
+        [Display(Name = "Branch")]
         public string Succursale { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Votre identifiant est requis.")]
-        [StringLength(50, ErrorMessage = "L'identifiant ne depasse pas 50 caracteres.")]
-        [Display(Name = "Votre identifiant")]
+        [Required(ErrorMessage = "Your identifier is required.")]
+        [StringLength(50, ErrorMessage = "An identifier is at most 50 characters long.")]
+        [Display(Name = "Your identifier")]
         public string IdDemandeur { get; set; } = string.Empty;
 
-        // Rempli par le serveur pour l'envoi a l'API.
+        // Filled in by the server before the request goes to the API.
         public string SystemeAppelant { get; set; } = string.Empty;
     }
 }

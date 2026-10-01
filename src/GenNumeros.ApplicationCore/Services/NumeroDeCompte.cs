@@ -1,9 +1,9 @@
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace GenNumeros.ApplicationCore.Services
 {
-    // La forme d'un numero de compte, et rien d'autre : seize chiffres en
-    // quatre tranches, XXX-XX-XXXXX-XXXXXX.
+    // The shape of an account number, and nothing else: sixteen digits in
+    // four slices, XXX-XX-XXXXX-XXXXXX.
     public static class NumeroDeCompte
     {
         public const int LongueurDeLaBanque = 3;
@@ -23,8 +23,8 @@ namespace GenNumeros.ApplicationCore.Services
             return string.Join('-', banque, systemeAppelant, succursale, compte);
         }
 
-        // Les deux derniers chiffres forment un nombre pair, ce qui revient
-        // a tirer le dernier parmi 0, 2, 4, 6 et 8.
+        // The last two digits form an even number, which comes down to
+        // drawing the last one among 0, 2, 4, 6 and 8.
         public static string TirerUnCompte(Random hasard)
         {
             ArgumentNullException.ThrowIfNull(hasard);

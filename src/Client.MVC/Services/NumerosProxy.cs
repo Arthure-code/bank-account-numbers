@@ -17,8 +17,8 @@ namespace Client.MVC.Services
 
         public async Task<List<NumeroDossier>> ObtenirTousLesNumeros()
         {
-            // Une liste vide vaut mieux que rien : l'appelant n'a pas a se
-            // demander quoi faire d'une absence.
+            // An empty list beats nothing at all: the caller is not left
+            // wondering what to do with an absence.
             return await _client.GetFromJsonAsync<List<NumeroDossier>>(Adresse) ?? new List<NumeroDossier>();
         }
 

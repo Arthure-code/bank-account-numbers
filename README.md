@@ -11,7 +11,7 @@
 
 A bank gives out its own account numbers. An **API** draws them, keeps them and refuses to give the same one twice. A **web application** holds the branch screens and never builds a number itself: it asks the API and shows what comes back.
 
-ASP.NET Core 8, Entity Framework Core 8, SQLite, Swagger. The site is in French.
+ASP.NET Core 8, Entity Framework Core 8, SQLite, Swagger.
 
 ## Screenshots
 
@@ -25,7 +25,7 @@ ASP.NET Core 8, Entity Framework Core 8, SQLite, Swagger. The site is in French.
 
 **The API**
 
-![The Swagger page of the numbers API: one operation to list the numbers, one to ask for a new one, each with its French summary, and the four schemas the API exchanges](docs/api-swagger.png)
+![The Swagger page of the numbers API: one operation to list the numbers, one to ask for a new one, each with its summary, and the four schemas the API exchanges](docs/api-swagger.png)
 
 ## How it works
 

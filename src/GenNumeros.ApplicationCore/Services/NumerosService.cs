@@ -1,4 +1,4 @@
-using GenNumeros.ApplicationCore.Entites;
+﻿using GenNumeros.ApplicationCore.Entites;
 using GenNumeros.ApplicationCore.Interfaces;
 using Microsoft.Extensions.Configuration;
 
@@ -6,15 +6,15 @@ namespace GenNumeros.ApplicationCore.Services
 {
     public class NumerosService : INumerosService
     {
-        public const string StatutALaCreation = "Nouveau";
+        public const string StatutALaCreation = "New";
 
-        // Le numero de la banque peut changer : il se lit dans la
-        // configuration, et vaut 145 tant que personne ne le change.
+        // The bank number can change: it is read from the configuration,
+        // and stays 145 until somebody changes it.
         private const string BanqueParDefaut = "145";
 
-        // Le tirage peut tomber sur un numero deja pris. Au bout de ces
-        // essais, on prefere repondre que rien n'a ete attribue plutot que
-        // de tourner sans fin.
+        // A draw can land on a number already given out. After this many
+        // attempts, answering that nothing was attributed beats spinning
+        // forever.
         private const int EssaisMaximum = 50;
 
         private readonly IAsyncRepository<NumeroDossier> _numeros;
@@ -26,7 +26,7 @@ namespace GenNumeros.ApplicationCore.Services
         {
         }
 
-        // Un tirage connu rend la regle verifiable.
+        // A known draw makes the rule verifiable.
         public NumerosService(IAsyncRepository<NumeroDossier> numeros, IConfiguration configuration, Random hasard)
         {
             _numeros = numeros;

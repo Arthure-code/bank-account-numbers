@@ -1,4 +1,4 @@
-using GenNumeros.Infrastructure.Data;
+﻿using GenNumeros.Infrastructure.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
@@ -7,9 +7,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace GenNumeros.API.TestsFonctionnels
 {
-    // L'API entiere, son routage, sa validation et sa serialisation, montee
-    // pour un seul test. Seule la base est remplacee : une SQLite en memoire
-    // qui meurt avec le test, et que le demarrage de l'API migre lui-meme.
+    // The whole API, its routing, its validation and its serialisation,
+    // brought up for a single test. Only the database is replaced: an
+    // in-memory SQLite that dies with the test, and that the API migrates
+    // itself on startup.
     public sealed class ApplicationDeTest : WebApplicationFactory<Program>
     {
         private readonly SqliteConnection _connexion = new SqliteConnection("DataSource=:memory:");

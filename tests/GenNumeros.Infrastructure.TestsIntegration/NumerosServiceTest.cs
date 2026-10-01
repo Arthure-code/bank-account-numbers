@@ -17,8 +17,8 @@ namespace GenNumeros.Infrastructure.TestsIntegration
             _numeros = new AsyncRepository<NumeroDossier>(_base.Context);
         }
 
-        // Un tirage qui rend toujours la meme chose : de quoi forcer la
-        // collision que le hasard ne produirait presque jamais.
+        // A draw that always answers the same thing: enough to force the
+        // collision that chance would almost never produce.
         private sealed class TirageFige : Random
         {
             private readonly int _valeur;
@@ -49,14 +49,14 @@ namespace GenNumeros.Infrastructure.TestsIntegration
         [Fact]
         public async Task GenererUnNumero_EcritUnNumeroDeSeizeChiffresEnQuatreTranches()
         {
-            //Etant donne une demande complete
+            //Given a complete request
             NumerosService service = Service();
 
-            //Lorsque
-            NumeroDossier? attribue = await service.GenererUnNumero("12", "45400", "employe.limoilou");
+            //When
+            NumeroDossier? attribue = await service.GenererUnNumero("12", "45400", "employee.limoilou");
             _base.Oublier();
 
-            //Alors le numero suit la forme attendue et arrive en base
+            //Then the number follows the expected shape and reaches the database
             Assert.NotNull(attribue);
             string[] tranches = attribue!.NumeroCompte.Split('-');
             Assert.Equal("3-2-5-6", string.Join('-', tranches.Select(t => t.Length)));
@@ -73,15 +73,15 @@ namespace GenNumeros.Infrastructure.TestsIntegration
         [InlineData(1234)]
         public async Task GenererUnNumero_LesDeuxDerniersChiffresFormentUnNombrePair(int graine)
         {
-            //Etant donne un tirage quelconque
+            //Given any draw at all
             NumerosService service = Service(tirage: new Random(graine));
 
-            //Lorsque vingt numeros sont attribues
+            //When twenty numbers are given out
             for (int demande = 0; demande < 20; demande++)
             {
-                NumeroDossier? attribue = await service.GenererUnNumero("12", "45400", "employe.limoilou");
+                NumeroDossier? attribue = await service.GenererUnNumero("12", "45400", "employee.limoilou");
 
-                //Alors chacun se termine par un nombre pair
+                //Then each one ends with an even number
                 Assert.NotNull(attribue);
                 Assert.True(NumeroDeCompte.SeTermineParUnNombrePair(attribue!.NumeroCompte),
                     attribue.NumeroCompte);
@@ -91,46 +91,46 @@ namespace GenNumeros.Infrastructure.TestsIntegration
         [Fact]
         public async Task GenererUnNumero_PoseLeStatutNeufEtLaDateDuJour()
         {
-            //Etant donne une demande
+            //Given a request
             NumerosService service = Service();
 
-            //Lorsque
-            NumeroDossier? attribue = await service.GenererUnNumero("12", "45400", "  employe.limoilou  ");
+            //When
+            NumeroDossier? attribue = await service.GenererUnNumero("12", "45400", "  employee.limoilou  ");
 
-            //Alors
-            Assert.Equal("Nouveau", attribue?.Statut);
+            //Then
+            Assert.Equal("New", attribue?.Statut);
             Assert.Equal(DateTime.Today, attribue?.DateCreation.Date);
-            Assert.Equal("employe.limoilou", attribue?.IdDemandeur);
+            Assert.Equal("employee.limoilou", attribue?.IdDemandeur);
         }
 
         [Fact]
         public async Task GenererUnNumero_LeNumeroDeLaBanqueVientDeLaConfiguration()
         {
-            //Etant donne une banque qui a change de numero
+            //Given a bank that changed its number
             NumerosService service = Service(banque: "200");
 
-            //Lorsque
-            NumeroDossier? attribue = await service.GenererUnNumero("12", "45400", "employe.limoilou");
+            //When
+            NumeroDossier? attribue = await service.GenererUnNumero("12", "45400", "employee.limoilou");
 
-            //Alors
+            //Then
             Assert.StartsWith("200-12-45400-", attribue!.NumeroCompte, StringComparison.Ordinal);
         }
 
         [Theory]
-        [InlineData("1", "45400", "employe")]
-        [InlineData("123", "45400", "employe")]
-        [InlineData("1a", "45400", "employe")]
-        [InlineData("12", "4540", "employe")]
-        [InlineData("12", "454000", "employe")]
-        [InlineData("12", "4540a", "employe")]
+        [InlineData("1", "45400", "employee")]
+        [InlineData("123", "45400", "employee")]
+        [InlineData("1a", "45400", "employee")]
+        [InlineData("12", "4540", "employee")]
+        [InlineData("12", "454000", "employee")]
+        [InlineData("12", "4540a", "employee")]
         [InlineData("12", "45400", "")]
         [InlineData("12", "45400", "   ")]
         public async Task GenererUnNumero_RefuseCeQuiNEstPasAuFormat(string systeme, string succursale, string demandeur)
         {
-            //Etant donne une demande mal formee
+            //Given a malformed request
             NumerosService service = Service();
 
-            //Alors rien n'est attribue, et rien n'est ecrit
+            //Then nothing is given out, and nothing is written
             Assert.Null(await service.GenererUnNumero(systeme, succursale, demandeur));
             Assert.Empty(await _numeros.ListAsync());
         }
@@ -138,16 +138,16 @@ namespace GenNumeros.Infrastructure.TestsIntegration
         [Fact]
         public async Task GenererUnNumero_NAttribueJamaisDeuxFoisLeMemeNumero()
         {
-            //Etant donne un tirage qui rend toujours le meme numero
+            //Given a draw that always answers the same number
             NumerosService service = Service(tirage: new TirageFige(42));
-            NumeroDossier? premier = await service.GenererUnNumero("12", "45400", "employe.limoilou");
+            NumeroDossier? premier = await service.GenererUnNumero("12", "45400", "employee.limoilou");
             _base.Oublier();
 
-            //Lorsqu'une deuxieme demande arrive
-            NumeroDossier? second = await service.GenererUnNumero("12", "45400", "employe.beauport");
+            //When a second request arrives
+            NumeroDossier? second = await service.GenererUnNumero("12", "45400", "employee.beauport");
 
-            //Alors la bibliotheque prefere ne rien attribuer plutot que de
-            //donner deux fois le meme numero
+            //Then the service would rather give out nothing than hand out
+            //the same number twice
             Assert.NotNull(premier);
             Assert.Null(second);
             Assert.Single(await _numeros.ListAsync());
@@ -156,51 +156,51 @@ namespace GenNumeros.Infrastructure.TestsIntegration
         [Fact]
         public async Task LaBaseRefuseElleMemeUnNumeroDejaAttribue()
         {
-            //Etant donne un numero deja en base
+            //Given a number already in the database
             await _numeros.AddAsync(new NumeroDossier
             {
                 NumeroCompte = "145-12-45400-123456",
-                IdDemandeur = "employe.limoilou",
-                Statut = "Nouveau",
+                IdDemandeur = "employee.limoilou",
+                Statut = "New",
                 DateCreation = DateTime.Now
             });
             _base.Oublier();
 
-            //Lorsqu'un deuxieme dossier pretend porter le meme numero
+            //When a second file claims the same number
             Task Ecrire() => _numeros.AddAsync(new NumeroDossier
             {
                 NumeroCompte = "145-12-45400-123456",
-                IdDemandeur = "employe.beauport",
-                Statut = "Nouveau",
+                IdDemandeur = "employee.beauport",
+                Statut = "New",
                 DateCreation = DateTime.Now
             });
 
-            //Alors l'index unique de la base refuse, sans compter sur le service
+            //Then the unique index refuses it, without relying on the service
             await Assert.ThrowsAsync<DbUpdateException>(Ecrire);
         }
 
         [Fact]
         public async Task ObtenirTousLesNumeros_RendLePlusRecentEnPremier()
         {
-            //Etant donne trois numeros attribues a trois moments
-            foreach ((string numero, int jour) in new[] { ("premier", 5), ("dernier", 7), ("deuxieme", 6) })
+            //Given three numbers given out at three moments
+            foreach ((string numero, int jour) in new[] { ("first", 5), ("last", 7), ("second", 6) })
             {
                 await _numeros.AddAsync(new NumeroDossier
                 {
                     NumeroCompte = numero,
-                    IdDemandeur = "employe.limoilou",
-                    Statut = "Nouveau",
+                    IdDemandeur = "employee.limoilou",
+                    Statut = "New",
                     DateCreation = new DateTime(2026, 1, jour)
                 });
             }
 
             _base.Oublier();
 
-            //Lorsque
+            //When
             IEnumerable<NumeroDossier> numeros = await Service().ObtenirTousLesNumeros();
 
-            //Alors
-            Assert.Equal("dernier, deuxieme, premier", string.Join(", ", numeros.Select(n => n.NumeroCompte)));
+            //Then
+            Assert.Equal("last, second, first", string.Join(", ", numeros.Select(n => n.NumeroCompte)));
         }
 
         [Fact]

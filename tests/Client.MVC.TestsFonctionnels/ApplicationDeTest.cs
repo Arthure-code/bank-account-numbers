@@ -1,4 +1,4 @@
-using Client.MVC.Controllers;
+﻿using Client.MVC.Controllers;
 using Client.MVC.Interfaces;
 using Client.MVC.Models;
 using Microsoft.AspNetCore.Hosting;
@@ -8,10 +8,10 @@ using Moq;
 
 namespace Client.MVC.TestsFonctionnels
 {
-    // L'application entiere, son routage, sa liaison de modele, sa
-    // validation et ses vues, montee pour un seul test. L'API devient un
-    // double : c'est l'application qu'on eprouve ici, pas le reseau.
-    // Le type passe a la fabrique ne sert qu'a designer l'assemblage.
+    // The whole application, its routing, its model binding, its
+    // validation and its views, brought up for a single test. The API
+    // becomes a double: what is tested here is the application, not the
+    // network. The type given to the factory only names the assembly.
     public sealed class ApplicationDeTest : WebApplicationFactory<GestionComptesController>
     {
         public Mock<INumerosProxy> Api { get; } = new Mock<INumerosProxy>();

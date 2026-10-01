@@ -3,32 +3,32 @@
 namespace GenNumeros.ApplicationCore.DTOs
 {
     /// <summary>
-    /// Ce qu'un système appelant doit fournir pour obtenir un numéro.
+    /// What a calling system must supply to obtain a number.
     /// </summary>
     public class DemandeDeNumeroDto
     {
         /// <summary>
-        /// Numéro du système appelant, sur deux chiffres.
+        /// Calling system number, two digits long.
         /// </summary>
         /// <example>12</example>
-        [Required(ErrorMessage = "Le numéro du système appelant est requis.")]
-        [RegularExpression("^[0-9]{2}$", ErrorMessage = "Le numéro du système appelant compte deux chiffres.")]
+        [Required(ErrorMessage = "The calling system number is required.")]
+        [RegularExpression("^[0-9]{2}$", ErrorMessage = "A calling system number is two digits long.")]
         public string SystemeAppelant { get; set; } = string.Empty;
 
         /// <summary>
-        /// Numéro de la succursale, sur cinq chiffres.
+        /// Branch number, five digits long.
         /// </summary>
         /// <example>45400</example>
-        [Required(ErrorMessage = "Le numéro de succursale est requis.")]
-        [RegularExpression("^[0-9]{5}$", ErrorMessage = "Le numéro de succursale compte cinq chiffres.")]
+        [Required(ErrorMessage = "The branch number is required.")]
+        [RegularExpression("^[0-9]{5}$", ErrorMessage = "A branch number is five digits long.")]
         public string Succursale { get; set; } = string.Empty;
 
         /// <summary>
-        /// Identifiant de la personne qui demande le numéro.
+        /// Identifier of the person asking for the number.
         /// </summary>
-        /// <example>employe.limoilou</example>
-        [Required(ErrorMessage = "L'identifiant du demandeur est requis.")]
-        [StringLength(50, ErrorMessage = "L'identifiant du demandeur ne dépasse pas 50 caractères.")]
+        /// <example>employee.limoilou</example>
+        [Required(ErrorMessage = "The requester identifier is required.")]
+        [StringLength(50, ErrorMessage = "A requester identifier is at most 50 characters long.")]
         public string IdDemandeur { get; set; } = string.Empty;
     }
 }

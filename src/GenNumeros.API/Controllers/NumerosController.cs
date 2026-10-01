@@ -18,14 +18,14 @@ namespace GenNumeros.API.Controllers
         }
 
         /// <summary>
-        /// Retourne tous les numéros de compte attribués.
+        /// Returns every account number given out.
         /// </summary>
         /// <remarks>
-        /// La liste est rendue du plus récent au plus ancien, avec l'état de
-        /// chaque numéro et l'identifiant de la personne qui l'a demandé.
+        /// The list runs from the most recent to the oldest, with the status
+        /// of each number and the identifier of the person who asked for it.
         /// </remarks>
-        /// <returns>La liste complète des numéros attribués.</returns>
-        /// <response code="200">Liste retournée, vide si aucun numéro n'a encore été attribué.</response>
+        /// <returns>The complete list of the numbers given out.</returns>
+        /// <response code="200">List returned, empty when no number has been given out yet.</response>
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<NumeroDossierDto>), StatusCodes.Status200OK)]
         public async Task<IEnumerable<NumeroDossierDto>> Get()
@@ -36,30 +36,29 @@ namespace GenNumeros.API.Controllers
         }
 
         /// <summary>
-        /// Attribue un nouveau numéro de compte et l'enregistre.
+        /// Gives out a new account number and records it.
         /// </summary>
         /// <remarks>
-        /// Le numéro suit le format XXX-XX-XXXXX-XXXXXX : le numéro de la
-        /// banque, celui du système appelant, celui de la succursale, puis un
-        /// numéro de compte tiré au hasard dont les deux derniers chiffres
-        /// forment un nombre pair. Le numéro attribué est unique et son état
-        /// est Nouveau.
+        /// A number follows the XXX-XX-XXXXX-XXXXXX format: the bank, the
+        /// calling system, the branch, then an account number drawn at
+        /// random whose last two digits form an even number. The number
+        /// given out is unique and its status reads New.
         ///
-        /// Exemple de demande :
+        /// Sample request:
         ///
         ///     POST /api/Numeros
         ///     {
         ///        "systemeAppelant": "12",
         ///        "succursale": "45400",
-        ///        "idDemandeur": "employe.limoilou"
+        ///        "idDemandeur": "employee.limoilou"
         ///     }
         ///
         /// </remarks>
-        /// <param name="demande">Le système appelant, la succursale et le demandeur.</param>
-        /// <returns>Le numéro attribué.</returns>
-        /// <response code="201">Numéro attribué et enregistré.</response>
-        /// <response code="400">Demande incomplète ou mal formée.</response>
-        /// <response code="409">Aucun numéro libre n'a pu être tiré pour cette succursale.</response>
+        /// <param name="demande">The calling system, the branch and the requester.</param>
+        /// <returns>The number given out.</returns>
+        /// <response code="201">Number given out and recorded.</response>
+        /// <response code="400">Request incomplete or malformed.</response>
+        /// <response code="409">No free number could be drawn for this branch.</response>
         [HttpPost]
         [ProducesResponseType(typeof(NumeroDossierDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -71,8 +70,8 @@ namespace GenNumeros.API.Controllers
                 return BadRequest(new ProblemDetails
                 {
                     Status = StatusCodes.Status400BadRequest,
-                    Title = "Demande absente.",
-                    Detail = "Le corps de la requête ne porte aucune demande."
+                    Title = "Request missing.",
+                    Detail = "The body of the request carries no demand."
                 });
             }
 
@@ -84,16 +83,16 @@ namespace GenNumeros.API.Controllers
                 return Conflict(new ProblemDetails
                 {
                     Status = StatusCodes.Status409Conflict,
-                    Title = "Aucun numéro libre.",
-                    Detail = "Aucun numéro libre n'a pu être attribué pour cette demande."
+                    Title = "No free number.",
+                    Detail = "No free number could be given out for this request."
                 });
             }
 
             return CreatedAtAction(nameof(Get), new { id = attribue.Id }, VersDto(attribue));
         }
 
-        // Un dossier tel que les systemes appelants le lisent : ses donnees,
-        // et rien de l'entite qui les porte.
+        // A file as the calling systems read it: its data, and nothing of
+        // the entity that carries it.
         private static NumeroDossierDto VersDto(NumeroDossier dossier)
         {
             return new NumeroDossierDto

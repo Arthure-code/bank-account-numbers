@@ -1,10 +1,5 @@
 ﻿using GenNumeros.ApplicationCore.Entites;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GenNumeros.Infrastructure.Data
 {
@@ -12,7 +7,6 @@ namespace GenNumeros.Infrastructure.Data
     {
         public GenNumeroContext(DbContextOptions<GenNumeroContext> options) : base(options)
         {
-
         }
 
         public DbSet<NumeroDossier> NumeroDossiers { get; set; }
@@ -21,8 +15,8 @@ namespace GenNumeros.Infrastructure.Data
         {
             ArgumentNullException.ThrowIfNull(modelBuilder);
 
-            // La banque ne redonne jamais un numero : la base le garantit,
-            // pas seulement le service qui le tire.
+            // The bank never gives a number twice: the database guarantees
+            // it, not only the service that draws it.
             modelBuilder.Entity<NumeroDossier>()
                 .HasIndex(n => n.NumeroCompte)
                 .IsUnique();

@@ -2,26 +2,28 @@
 
 namespace GenNumeros.ApplicationCore.Entites
 {
-    // Un numero attribue : la banque ne le redonne jamais. L'unicite est
-    // posee par le contexte, pour que le coeur ignore la base.
+    // A number that has been given out: the bank never gives it again.
+    // Uniqueness is declared by the context, so that the core knows
+    // nothing about the database.
     public class NumeroDossier : BaseEntity
     {
-        // Seize chiffres en quatre tranches : XXX-XX-XXXXX-XXXXXX.
+        // Sixteen digits in four slices: XXX-XX-XXXXX-XXXXXX.
         [Required]
         [StringLength(19, MinimumLength = 19)]
-        [Display(Name = "Numero de compte")]
+        [Display(Name = "Account number")]
         public string NumeroCompte { get; set; } = string.Empty;
 
         [Required]
         [StringLength(50)]
-        [Display(Name = "Demandeur")]
+        [Display(Name = "Requested by")]
         public string IdDemandeur { get; set; } = string.Empty;
 
         [Required]
         [StringLength(20)]
+        [Display(Name = "Status")]
         public string Statut { get; set; } = string.Empty;
 
-        [Display(Name = "Date de creation")]
+        [Display(Name = "Attributed on")]
         public DateTime DateCreation { get; set; }
     }
 }

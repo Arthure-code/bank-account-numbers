@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using System.Text.RegularExpressions;
 using Client.MVC.Models;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -10,8 +10,8 @@ namespace Client.MVC.TestsFonctionnels
     {
         private readonly ApplicationDeTest _application = new ApplicationDeTest();
 
-        // Sans cela, le client suit la redirection et on ne voit plus que la
-        // page d'arrivee, jamais la reponse du formulaire.
+        // Without this, the client follows the redirect and only the
+        // landing page is seen, never the answer to the form.
         private HttpClient Navigateur() => _application.CreateClient(
             new WebApplicationFactoryClientOptions { AllowAutoRedirect = false });
 
@@ -30,7 +30,7 @@ namespace Client.MVC.TestsFonctionnels
             {
                 Id = identifiant,
                 NumeroCompte = numero,
-                IdDemandeur = "employe.limoilou",
+                IdDemandeur = "employee.limoilou",
                 Statut = statut,
                 DateCreation = new DateTime(2026, 1, jour)
             };
@@ -48,20 +48,20 @@ namespace Client.MVC.TestsFonctionnels
         [Fact]
         public async Task Index_NeMontreQueLesNumerosNeufsDuPlusRecentAuPlusAncien()
         {
-            //Etant donne deux numeros neufs et un numero deja utilise
+            //Given two new numbers and one already in use
             _application.Api.Setup(p => p.ObtenirTousLesNumeros()).ReturnsAsync(new List<NumeroDossier>
             {
-                UnNumero(1, "145-12-45400-111110", "Nouveau", 5),
+                UnNumero(1, "145-12-45400-111110", "New", 5),
                 UnNumero(2, "145-12-45401-222220", "Attribue", 6),
-                UnNumero(3, "145-12-45402-333330", "Nouveau", 7)
+                UnNumero(3, "145-12-45402-333330", "New", 7)
             });
             HttpClient navigateur = Navigateur();
 
-            //Lorsque
+            //When
             string page = await navigateur.GetStringAsync("/GestionComptes");
 
-            //Alors le numero utilise ne parait pas, et le plus recent passe
-            //devant
+            //Then the used number is absent, and the most recent one
+            //comes first
             Assert.DoesNotContain("222220", page, StringComparison.Ordinal);
             Assert.True(page.IndexOf("333330", StringComparison.Ordinal)
                 < page.IndexOf("111110", StringComparison.Ordinal));
@@ -70,13 +70,13 @@ namespace Client.MVC.TestsFonctionnels
         [Fact]
         public async Task DemanderNumero_LaListeDeroulantePorteLesSuccursalesDuFichier()
         {
-            //Etant donne les trois succursales de la configuration
+            //Given the three branches from the configuration
             HttpClient navigateur = Navigateur();
 
-            //Lorsque
+            //When
             string page = await navigateur.GetStringAsync("/GestionComptes/DemanderNumero");
 
-            //Alors
+            //Then
             Assert.Contains("value=\"45400\"", page, StringComparison.Ordinal);
             Assert.Contains("value=\"45401\"", page, StringComparison.Ordinal);
             Assert.Contains("value=\"45402\"", page, StringComparison.Ordinal);
@@ -86,15 +86,15 @@ namespace Client.MVC.TestsFonctionnels
         [Fact]
         public async Task DemanderNumero_TransmetLaDemandeEtRevientALaListe()
         {
-            //Etant donne une API qui attribue
+            //Given an API that gives out a number
             DemandeDeNumero? envoyee = null;
             _application.Api.Setup(p => p.DemanderUnNumero(It.IsAny<DemandeDeNumero>()))
                 .Callback<DemandeDeNumero>(d => envoyee = d)
-                .ReturnsAsync(UnNumero(1, "145-12-45400-123456", "Nouveau", 5));
+                .ReturnsAsync(UnNumero(1, "145-12-45400-123456", "New", 5));
             HttpClient navigateur = Navigateur();
             string jeton = await Jeton(navigateur, "/GestionComptes/DemanderNumero");
 
-            //Lorsque le formulaire part
+            //When the form is sent
             HttpResponseMessage reponse = await navigateur.PostAsync("/GestionComptes/DemanderNumero",
                 new FormUrlEncodedContent(new Dictionary<string, string>
                 {
@@ -103,8 +103,8 @@ namespace Client.MVC.TestsFonctionnels
                     ["IdDemandeur"] = "marie.tremblay"
                 }));
 
-            //Alors l'application ajoute son numero de systeme appelant, et
-            //renvoie le visiteur a la liste
+            //Then the application adds its own calling system number, and
+            //sends the visitor back to the list
             Assert.Equal(HttpStatusCode.Found, reponse.StatusCode);
             Assert.Equal("/GestionComptes", reponse.Headers.Location?.OriginalString);
             Assert.Equal("12", envoyee?.SystemeAppelant);
@@ -115,11 +115,11 @@ namespace Client.MVC.TestsFonctionnels
         [Fact]
         public async Task DemanderNumero_UnIdentifiantManquantRevientAvecSonMessage()
         {
-            //Etant donne un formulaire sans identifiant
+            //Given a form with no identifier
             HttpClient navigateur = Navigateur();
             string jeton = await Jeton(navigateur, "/GestionComptes/DemanderNumero");
 
-            //Lorsque
+            //When
             HttpResponseMessage reponse = await navigateur.PostAsync("/GestionComptes/DemanderNumero",
                 new FormUrlEncodedContent(new Dictionary<string, string>
                 {
@@ -128,9 +128,9 @@ namespace Client.MVC.TestsFonctionnels
                     ["IdDemandeur"] = string.Empty
                 }));
 
-            //Alors la page revient en le disant, et rien n'est demande
+            //Then the page comes back saying so, and nothing is asked for
             Assert.Equal(HttpStatusCode.OK, reponse.StatusCode);
-            Assert.Contains("identifiant est requis", await reponse.Content.ReadAsStringAsync(),
+            Assert.Contains("identifier is required", await reponse.Content.ReadAsStringAsync(),
                 StringComparison.Ordinal);
             _application.Api.Verify(p => p.DemanderUnNumero(It.IsAny<DemandeDeNumero>()), Times.Never);
         }
@@ -138,11 +138,11 @@ namespace Client.MVC.TestsFonctionnels
         [Fact]
         public async Task DemanderNumero_UneSuccursaleManquanteRevientAvecSonMessage()
         {
-            //Etant donne un formulaire ou aucune succursale n'est choisie
+            //Given a form where no branch is chosen
             HttpClient navigateur = Navigateur();
             string jeton = await Jeton(navigateur, "/GestionComptes/DemanderNumero");
 
-            //Lorsque
+            //When
             HttpResponseMessage reponse = await navigateur.PostAsync("/GestionComptes/DemanderNumero",
                 new FormUrlEncodedContent(new Dictionary<string, string>
                 {
@@ -151,22 +151,22 @@ namespace Client.MVC.TestsFonctionnels
                     ["IdDemandeur"] = "marie.tremblay"
                 }));
 
-            //Alors
+            //Then
             Assert.Equal(HttpStatusCode.OK, reponse.StatusCode);
-            Assert.Contains("Choisissez une succursale", await reponse.Content.ReadAsStringAsync(),
+            Assert.Contains("Choose a branch", await reponse.Content.ReadAsStringAsync(),
                 StringComparison.Ordinal);
         }
 
         [Fact]
         public async Task DemanderNumero_ExpliqueQuandLApiNAttribueRien()
         {
-            //Etant donne une API qui ne rend aucun numero
+            //Given an API that answers no number
             _application.Api.Setup(p => p.DemanderUnNumero(It.IsAny<DemandeDeNumero>()))
                 .ReturnsAsync((NumeroDossier?)null);
             HttpClient navigateur = Navigateur();
             string jeton = await Jeton(navigateur, "/GestionComptes/DemanderNumero");
 
-            //Lorsque
+            //When
             HttpResponseMessage reponse = await navigateur.PostAsync("/GestionComptes/DemanderNumero",
                 new FormUrlEncodedContent(new Dictionary<string, string>
                 {
@@ -175,9 +175,9 @@ namespace Client.MVC.TestsFonctionnels
                     ["IdDemandeur"] = "marie.tremblay"
                 }));
 
-            //Alors le visiteur lit pourquoi, au lieu d'une page blanche
+            //Then the visitor reads why, instead of a blank page
             Assert.Equal(HttpStatusCode.OK, reponse.StatusCode);
-            Assert.Contains("n&#x27;a pas pu attribuer", await reponse.Content.ReadAsStringAsync(),
+            Assert.Contains("could not give out a number", await reponse.Content.ReadAsStringAsync(),
                 StringComparison.Ordinal);
         }
 

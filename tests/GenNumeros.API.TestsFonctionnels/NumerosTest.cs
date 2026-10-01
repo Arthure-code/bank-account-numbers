@@ -9,7 +9,7 @@ namespace GenNumeros.API.TestsFonctionnels
         private readonly ApplicationDeTest _application = new ApplicationDeTest();
 
         private static DemandeDeNumeroDto UneDemande(string succursale = "45400",
-            string demandeur = "employe.limoilou") => new DemandeDeNumeroDto
+            string demandeur = "employee.limoilou") => new DemandeDeNumeroDto
             {
                 SystemeAppelant = "12",
                 Succursale = succursale,
@@ -19,10 +19,10 @@ namespace GenNumeros.API.TestsFonctionnels
         [Fact]
         public async Task Get_RendUneListeVideSurUneBaseNeuve()
         {
-            //Etant donne une base que personne n'a encore servie
+            //Given a database nobody has used yet
             HttpClient client = _application.CreateClient();
 
-            //Alors
+            //Then
             HttpResponseMessage reponse = await client.GetAsync("/api/Numeros");
             Assert.Equal(HttpStatusCode.OK, reponse.StatusCode);
             Assert.Empty((await reponse.Content.ReadFromJsonAsync<List<NumeroDossierDto>>())!);
@@ -31,17 +31,17 @@ namespace GenNumeros.API.TestsFonctionnels
         [Fact]
         public async Task Post_AttribueUnNumeroEtLeRendDansLaListe()
         {
-            //Etant donne une demande complete
+            //Given a complete request
             HttpClient client = _application.CreateClient();
 
-            //Lorsque
+            //When
             HttpResponseMessage reponse = await client.PostAsJsonAsync("/api/Numeros", UneDemande());
 
-            //Alors le numero est cree, et la liste le porte
+            //Then the number is created, and the list carries it
             Assert.Equal(HttpStatusCode.Created, reponse.StatusCode);
             NumeroDossierDto? attribue = await reponse.Content.ReadFromJsonAsync<NumeroDossierDto>();
-            Assert.Equal("Nouveau", attribue?.Statut);
-            Assert.Equal("employe.limoilou", attribue?.IdDemandeur);
+            Assert.Equal("New", attribue?.Statut);
+            Assert.Equal("employee.limoilou", attribue?.IdDemandeur);
 
             List<NumeroDossierDto> liste = (await client.GetFromJsonAsync<List<NumeroDossierDto>>("/api/Numeros"))!;
             Assert.Equal(attribue!.NumeroCompte, Assert.Single(liste).NumeroCompte);
@@ -50,14 +50,14 @@ namespace GenNumeros.API.TestsFonctionnels
         [Fact]
         public async Task Post_LeNumeroSuitLaFormeAttendue()
         {
-            //Etant donne une demande pour la succursale de Limoilou
+            //Given a request for the Limoilou branch
             HttpClient client = _application.CreateClient();
 
-            //Lorsque
+            //When
             NumeroDossierDto? attribue = await (await client.PostAsJsonAsync("/api/Numeros", UneDemande("45401")))
                 .Content.ReadFromJsonAsync<NumeroDossierDto>();
 
-            //Alors seize chiffres en quatre tranches, les deux derniers pairs
+            //Then sixteen digits in four slices, the last two even
             string[] tranches = attribue!.NumeroCompte.Split('-');
             Assert.Equal("145-12-45401", string.Join('-', tranches[..3]));
             Assert.Equal(6, tranches[3].Length);
@@ -67,7 +67,7 @@ namespace GenNumeros.API.TestsFonctionnels
         [Fact]
         public async Task Post_CentDemandesDonnentCentNumerosDifferents()
         {
-            //Etant donne cent demandes de suite
+            //Given a hundred requests in a row
             HttpClient client = _application.CreateClient();
 
             for (int demande = 0; demande < 100; demande++)
@@ -75,7 +75,7 @@ namespace GenNumeros.API.TestsFonctionnels
                 await client.PostAsJsonAsync("/api/Numeros", UneDemande());
             }
 
-            //Alors aucun numero n'a ete donne deux fois
+            //Then no number was given out twice
             List<NumeroDossierDto> liste = (await client.GetFromJsonAsync<List<NumeroDossierDto>>("/api/Numeros"))!;
             Assert.Equal(100, liste.Count);
             Assert.Equal(100, liste.Select(n => n.NumeroCompte).Distinct(StringComparer.Ordinal).Count());
@@ -84,7 +84,7 @@ namespace GenNumeros.API.TestsFonctionnels
         [Fact]
         public async Task Get_RendLePlusRecentEnPremier()
         {
-            //Etant donne trois numeros attribues l'un apres l'autre
+            //Given three numbers given out one after the other
             HttpClient client = _application.CreateClient();
             var attribues = new List<string>();
 
@@ -95,23 +95,23 @@ namespace GenNumeros.API.TestsFonctionnels
                 attribues.Add(numero!.NumeroCompte);
             }
 
-            //Alors la liste les rend dans l'ordre inverse
+            //Then the list answers them in reverse order
             List<NumeroDossierDto> liste = (await client.GetFromJsonAsync<List<NumeroDossierDto>>("/api/Numeros"))!;
             attribues.Reverse();
             Assert.Equal(attribues, liste.Select(n => n.NumeroCompte));
         }
 
         [Theory]
-        [InlineData("1", "45400", "employe")]
-        [InlineData("12", "4540", "employe")]
+        [InlineData("1", "45400", "employee")]
+        [InlineData("12", "4540", "employee")]
         [InlineData("12", "45400", "")]
-        [InlineData("ab", "45400", "employe")]
+        [InlineData("ab", "45400", "employee")]
         public async Task Post_RefuseUneDemandeMalFormee(string systeme, string succursale, string demandeur)
         {
-            //Etant donne une demande hors format
+            //Given a request outside the format
             HttpClient client = _application.CreateClient();
 
-            //Lorsque
+            //When
             HttpResponseMessage reponse = await client.PostAsJsonAsync("/api/Numeros", new DemandeDeNumeroDto
             {
                 SystemeAppelant = systeme,
@@ -119,8 +119,8 @@ namespace GenNumeros.API.TestsFonctionnels
                 IdDemandeur = demandeur
             });
 
-            //Alors elle est refusee avant d'atteindre le service, et rien
-            //n'est enregistre
+            //Then it is rejected before it reaches the service, and
+            //nothing is recorded
             Assert.Equal(HttpStatusCode.BadRequest, reponse.StatusCode);
             Assert.Empty((await client.GetFromJsonAsync<List<NumeroDossierDto>>("/api/Numeros"))!);
         }
@@ -128,10 +128,10 @@ namespace GenNumeros.API.TestsFonctionnels
         [Fact]
         public async Task Post_RefuseUnCorpsAbsent()
         {
-            //Etant donne une requete sans corps
+            //Given a request with no body
             HttpClient client = _application.CreateClient();
 
-            //Alors
+            //Then
             HttpResponseMessage reponse = await client.PostAsJsonAsync<DemandeDeNumeroDto?>("/api/Numeros", null);
             Assert.Equal(HttpStatusCode.BadRequest, reponse.StatusCode);
         }
