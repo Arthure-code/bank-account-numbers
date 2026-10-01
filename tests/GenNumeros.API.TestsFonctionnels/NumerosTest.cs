@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using System.Net.Http.Json;
 using GenNumeros.ApplicationCore.DTOs;
 
@@ -59,7 +59,7 @@ namespace GenNumeros.API.TestsFonctionnels
 
             //Alors seize chiffres en quatre tranches, les deux derniers pairs
             string[] tranches = attribue!.NumeroCompte.Split('-');
-            Assert.Equal(new[] { "145", "12", "45401" }, tranches[..3]);
+            Assert.Equal("145-12-45401", string.Join('-', tranches[..3]));
             Assert.Equal(6, tranches[3].Length);
             Assert.Equal(0, int.Parse(tranches[3][^2..], System.Globalization.CultureInfo.InvariantCulture) % 2);
         }

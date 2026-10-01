@@ -1,4 +1,4 @@
-using GenNumeros.ApplicationCore.Entites;
+﻿using GenNumeros.ApplicationCore.Entites;
 using GenNumeros.ApplicationCore.Interfaces;
 using GenNumeros.ApplicationCore.Services;
 using GenNumeros.Infrastructure.Data;
@@ -59,7 +59,7 @@ namespace GenNumeros.Infrastructure.TestsIntegration
             //Alors le numero suit la forme attendue et arrive en base
             Assert.NotNull(attribue);
             string[] tranches = attribue!.NumeroCompte.Split('-');
-            Assert.Equal(new[] { 3, 2, 5, 6 }, tranches.Select(t => t.Length));
+            Assert.Equal("3-2-5-6", string.Join('-', tranches.Select(t => t.Length)));
             Assert.Equal(16, attribue.NumeroCompte.Replace("-", string.Empty, StringComparison.Ordinal).Length);
             Assert.Equal("145", tranches[0]);
             Assert.Equal("12", tranches[1]);
@@ -200,7 +200,7 @@ namespace GenNumeros.Infrastructure.TestsIntegration
             IEnumerable<NumeroDossier> numeros = await Service().ObtenirTousLesNumeros();
 
             //Alors
-            Assert.Equal(new[] { "dernier", "deuxieme", "premier" }, numeros.Select(n => n.NumeroCompte));
+            Assert.Equal("dernier, deuxieme, premier", string.Join(", ", numeros.Select(n => n.NumeroCompte)));
         }
 
         [Fact]

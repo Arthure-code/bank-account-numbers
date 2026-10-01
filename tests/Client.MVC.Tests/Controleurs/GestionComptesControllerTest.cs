@@ -1,4 +1,4 @@
-using Client.MVC.Controllers;
+﻿using Client.MVC.Controllers;
 using Client.MVC.Interfaces;
 using Client.MVC.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -79,7 +79,7 @@ namespace Client.MVC.Tests.Controleurs
             //Alors
             var montres = Assert.IsAssignableFrom<IEnumerable<NumeroDossier>>(
                 Assert.IsType<ViewResult>(resultat).Model).ToList();
-            Assert.Equal(new[] { "dernier", "deuxieme", "premier" }, montres.Select(n => n.NumeroCompte));
+            Assert.Equal("dernier, deuxieme, premier", string.Join(", ", montres.Select(n => n.NumeroCompte)));
         }
 
         [Fact]
