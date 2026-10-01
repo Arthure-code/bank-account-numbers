@@ -1,0 +1,44 @@
+@model Client.MVC.Models.DemandeDeNumero
+
+@{
+    ViewData["Title"] = "Demander un numéro de compte";
+    List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> succursales = ViewBag.Succursales;
+}
+
+<h1>Demander un numéro de compte</h1>
+
+<p>
+    La banque attribue le numéro elle-même. Choisissez la succursale et
+    identifiez-vous.
+</p>
+
+<div class="row">
+    <div class="col-md-5">
+        <form asp-action="DemanderNumero" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="Succursale" class="control-label"></label>
+                <select asp-for="Succursale" asp-items="succursales" class="form-control">
+                    <option value="">Choisir une succursale</option>
+                </select>
+                <span asp-validation-for="Succursale" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="IdDemandeur" class="control-label"></label>
+                <input asp-for="IdDemandeur" class="form-control" />
+                <span asp-validation-for="IdDemandeur" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-3">
+                <input type="submit" value="Demander" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

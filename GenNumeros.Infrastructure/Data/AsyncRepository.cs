@@ -36,7 +36,7 @@ namespace GenNumeros.Infrastructure.Data
             await _dbContext.SaveChangesAsync();
         }
 
-        public virtual async Task<T> GetByIdAsync(int id)
+        public virtual async Task<T?> GetByIdAsync(int id)
         {
             return await _dbContext.Set<T>().AsNoTracking().SingleOrDefaultAsync(t=>t.Id == id);
         }

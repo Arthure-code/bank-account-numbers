@@ -16,5 +16,16 @@ namespace GenNumeros.Infrastructure.Data
         }
 
         public DbSet<NumeroDossier> NumeroDossiers { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            ArgumentNullException.ThrowIfNull(modelBuilder);
+
+            // La banque ne redonne jamais un numero : la base le garantit,
+            // pas seulement le service qui le tire.
+            modelBuilder.Entity<NumeroDossier>()
+                .HasIndex(n => n.NumeroCompte)
+                .IsUnique();
+        }
     }
 }

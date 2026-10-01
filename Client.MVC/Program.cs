@@ -1,7 +1,15 @@
+﻿using Client.MVC.Interfaces;
+using Client.MVC.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+string adresseDeLApi = builder.Configuration.GetValue<string>("urlAPI")
+    ?? throw new InvalidOperationException("L'adresse de l'API est absente de la configuration.");
+
+builder.Services.AddHttpClient<INumerosProxy, NumerosProxy>(client =>
+    client.BaseAddress = new Uri(adresseDeLApi));
 
 var app = builder.Build();
 
@@ -24,4 +32,4 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.Run();
+await app.RunAsync();

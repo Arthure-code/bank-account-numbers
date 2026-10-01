@@ -3,6 +3,7 @@ using System;
 using GenNumeros.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GenNumeros.Infrastructure.Migrations
 {
     [DbContext(typeof(GenNumeroContext))]
-    partial class GenNumeroContextModelSnapshot : ModelSnapshot
+    [Migration("20261001120324_NumeroDeCompteUnique")]
+    partial class NumeroDeCompteUnique
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.19");
